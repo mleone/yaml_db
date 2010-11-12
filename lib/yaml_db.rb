@@ -4,6 +4,10 @@ require 'active_record'
 require 'serialization_helper'
 require 'active_support/core_ext/kernel/reporting'
 
+if defined?(Rails) && Rails::VERSION::MAJOR == 3
+  require 'yaml_db/rails/railtie'
+end
+
 module YamlDb
   module Helper
     def self.loader
@@ -64,12 +68,4 @@ module YamlDb
         end
     end
   end
-
-  class Railtie < Rails::Railtie
-    rake_tasks do
-      load File.expand_path('../tasks/yaml_db_tasks.rake', 
-__FILE__)
-    end
-  end
-
 end
