@@ -17,7 +17,7 @@ module SerializationHelper
 
     def dump_to_dir(dirname)
       Dir.mkdir(dirname)
-      tables = @dumper.tables
+      tables = (@dumper.tables + @dumper.views)
       tables.each do |table|
         io = File.new "#{dirname}/#{table}.#{@extension}", "w"
         @dumper.before_table(io, table)
@@ -146,7 +146,7 @@ module SerializationHelper
     end
 
     def self.dump(io)
-      tables.each do |table|
+      (tables + views).each do |table|
         before_table(io, table)
         dump_table(io, table)
         after_table(io, table)
@@ -159,6 +159,10 @@ module SerializationHelper
 
     def self.tables
       ActiveRecord::Base.connection.tables.reject { |table| ['schema_info', 'schema_migrations'].include?(table) }
+    end
+
+    def self.views
+      ActiveRecord::Base.connection.views.reject { |table| ['schema_info', 'schema_migrations'].include?(table) }
     end
 
     def self.dump_table(io, table)
